@@ -308,6 +308,7 @@ after_bundle do
   add_sitemap
 
   rails_command "active_storage:install"
+  rails_command "action_text:install"
 
   # Commit everything to git
   unless ENV["SKIP_GIT"]
