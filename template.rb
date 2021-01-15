@@ -58,6 +58,11 @@ def add_gems
   gem 'sitemap_generator', '~> 6.1', '>= 6.1.2'
   gem 'whenever', require: false
 
+  gem_group :development, :test do
+    gem "factory_bot"
+    gem "rspec-rails"
+  end
+
   if rails_5?
     gsub_file "Gemfile", /gem 'sqlite3'/, "gem 'sqlite3', '~> 1.3.0'"
     gem 'webpacker', '~> 5.1', '>= 5.1.1'
@@ -263,11 +268,29 @@ def add_sitemap
 end
 
 # Main setup
+
+gsub_file 'config/application.rb', 'require "rails/all"',
+'require "rails"
+# Pick the frameworks you want:
+require "active_model/railtie"
+require "active_job/railtie"
+require "active_record/railtie"
+require "active_storage/engine"
+require "action_controller/railtie"
+require "action_mailer/railtie"
+require "action_mailbox/engine"
+require "action_text/engine"
+require "action_view/railtie"
+require "action_cable/engine"
+require "sprockets/railtie"
+# require "rails/test_unit/railtie"'
+
 add_template_repository_to_source_path
 
 add_gems
 
 after_bundle do
+  rails_command "rspec:install" 
   set_application_name
   stop_spring
   add_users
@@ -297,6 +320,8 @@ after_bundle do
       puts e.message
     end
   end
+
+  run "rm -rf test"
 
   say
   say "Jumpstart app successfully created!", :blue
